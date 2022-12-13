@@ -8,6 +8,8 @@ import {
 import { Platform } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs';
 import { Photo } from 'src/app/shared/interfaces/photo';
+import { Capacitor } from '@capacitor/core';
+import { Directory, Filesystem } from '@capacitor/filesystem';
 
 @Injectable({
   providedIn: 'root',
@@ -42,10 +44,20 @@ export class PhotoService {
     };
     try {
       const photo = await Camera.getPhoto(options);
-      if (photo.path) {
-        this.addPhoto(Date.now().toString(), photo.path);
+      const uniqueName = Date.now().toString();
+      if (this.platform.is('capacitor') && photo.path) {
+        const photoOnFileSystem = await Filesystem.readFile({
+          path: photo.path,
+        });
+        const fileName = uniqueName + '.jpeg';
+        const permanentFile = await Filesystem.writeFile({
+          data: photoOnFileSystem.data,
+          path: fileName,
+          directory: Directory.Data,
+        });
+        this.addPhoto(fileName, Capacitor.convertFileSrc(permanentFile.uri));
       } else if (photo.dataUrl) {
-        this.addPhoto(Date.now().toString(), photo.dataUrl);
+        this.addPhoto(uniqueName, photo.dataUrl);
       }
     } catch (err) {
       console.log(err);
