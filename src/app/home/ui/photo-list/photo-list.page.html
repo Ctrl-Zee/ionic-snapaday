@@ -1,0 +1,6 @@
+<ion-list lines="none">
+  <ion-item *ngFor="let photo of photos; trackBy: trackByFn">
+    <img [src]="photo.safeResourceUrl" />
+    <ion-badge slot="end" color="light"> {{ photo.dateTaken }} </ion-badge>
+  </ion-item>
+</ion-list>
