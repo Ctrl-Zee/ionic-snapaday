@@ -6,7 +6,11 @@ const routes: Routes = [
   {
     path: '',
     component: HomePage,
+  },  {
+    path: 'photo-list',
+    loadChildren: () => import('./ui/photo-list/photo-list.module').then( m => m.PhotoListPageModule)
   }
+
 ];
 
 @NgModule({
