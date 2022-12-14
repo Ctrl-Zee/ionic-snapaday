@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { map } from 'rxjs';
+import { combineLatest, map } from 'rxjs';
 import { PhotoService } from './data-access/photo.service';
 
 @Component({
@@ -18,6 +18,16 @@ export class HomePage {
         ),
       }))
     )
+  );
+
+  vm$ = combineLatest([
+    this.photos$,
+    this.photoService.hasTakenPhotoToday$,
+  ]).pipe(
+    map(([photos, hasTakenPhotoToday]) => ({
+      photos,
+      hasTakenPhotoToday,
+    }))
   );
 
   constructor(
